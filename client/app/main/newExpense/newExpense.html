@@ -1,0 +1,111 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<fieldset>
+<div class="form-horizontal">
+  <h2 class="col-sm-offset-2">Adding new expense</h2>
+  <br/>
+
+  <div class="col-md-6">
+
+
+                <!--<button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>-->
+
+
+
+    <div class="form-group">
+      <label class="col-md-3 control-label">Date:</label>
+         <div class="col-md-9">
+           <p class="input-group">
+           <div class="input-group">
+             <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+           <input type="text" class="form-control" ng-model="newExp.temporary.dateTime" autoclose="true" bs-datepicker required>
+             <span class="input-group-btn">
+                <span class="btn btn-default"><i style="color: red; font-size: 10px; " class="glyphicon glyphicon-asterisk"></i></span>
+              </span>
+           </div>
+          </p>
+         </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-md-3 control-label">Time:</label>
+      <div class="col-md-9">
+        <p class="input-group">
+       <div class="input-group">
+           <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+         <input type="time" style="height: 35px" ng-model="newExp.temporary.dateTime" class="form-control"/>
+          <span class="input-group-btn">
+                 <span class="btn btn-default"><i style="color: red; font-size: 10px; " class="glyphicon glyphicon-asterisk"></i></span>
+              </span>
+         </div>
+        </p>
+
+      </div>
+    </div>
+
+
+
+    <div class="form-group">
+      <label class="col-md-3 control-label">Description:</label>
+      <div class="col-md-9">
+        <p class="input-group">
+       <div class="input-group">
+         <span class="input-group-addon"><i class="glyphicon glyphicon-font"></i>  </span>
+        <input type="text" ng-model="newExp.temporary.description" class="form-control" placeholder="Description here..."/>
+          <span class="input-group-btn">
+                <span class="btn btn-default"><i style="color: red; font-size: 10px; " class="glyphicon glyphicon-asterisk"></i></span>
+              </span>
+       </div>
+        </p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-md-3 control-label">Amount:</label>
+      <div class="col-md-9">
+        <p class="input-group">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-euro"></i>  </span>
+          <input type="number" ng-model="newExp.temporary.amount" class="form-control" placeholder="Total amount here..."/>
+        <span class="input-group-btn">
+                 <span class="btn btn-default"><i style="color: red; font-size: 10px; " class="glyphicon glyphicon-asterisk"></i></span>
+              </span>
+        </div>
+        </p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-md-3 control-label">Comment:</label>
+      <div class="col-md-9">
+        <textarea name="textArea" cols="50" rows="3" class="form-control" ng-model="newExp.temporary.comment" placeholder="Your comment here..."></textarea>
+
+       <p><strong>Indicates mandatory fields  </strong><span><i style="color: red; font-size: 10px; " class="glyphicon glyphicon-asterisk"></i></span></p>
+        <br/>
+
+        <!--<button class="btn btn-lg btn-success" ng-click="newExp.saveNewExpense()" ng-disabled="!newExp.temporary.dateTime ||  !newExp.temporary.amount ||  !newExp.temporary.description"><i class="glyphicon glyphicon-floppy-disk"></i> Save</button>-->
+        <!--<button class="btn btn-lg btn-danger" ui-sref="main"><i class="glyphicon glyphicon-th-list"></i> Close</button>-->
+      </div>
+
+        <div class="form-group form-horizontal">
+          <div class="col-md-offset-4 col-md-8">
+            <p class="help-block"> {{ message }} </p>
+            <button class="btn btn btn-success" ng-click="newExp.saveNewExpense()" ng-disabled="!newExp.temporary.dateTime ||  !newExp.temporary.amount ||  !newExp.temporary.description"><i class="glyphicon glyphicon-floppy-disk"></i> Save & close</button>
+            <button class="btn btn btn-danger" ui-sref="main"><i class="glyphicon glyphicon-th-list"></i> Cancel & return</button>
+          </div>
+        </div>
+
+    </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+  </fieldset>
+
+
+
+<div ng-include="'components/footer/footer.html'"></div>

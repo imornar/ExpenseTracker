@@ -1,0 +1,136 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+<div class="form-horizontal">
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="form-group">
+        <label class="col-md-3 control-label">From:</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control" ng-model="im.filters.dateFrom" autoclose="true" placeholder="Date from" bs-datepicker>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-3 control-label">To:</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control" ng-model="im.filters.dateTo" autoclose="true" placeholder="Date to" bs-datepicker>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <label class="col-md-3 control-label">From:</label>
+        <div class="col-md-9">
+          <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+            <input type="time" style="height: 35px" ng-model="im.filters.timeFrom"class="form-control"/>
+          </div>
+          </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-3 control-label">To:</label>
+        <div class="col-md-9">
+          <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+            <input type="time" style="height: 35px" ng-model="im.filters.timeTo" class="form-control"/>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+         <label class="col-md-3 control-label" >Week:</label>
+        <input type="week" class="well well-sm" ng-model="im.selectedWeek" ng-change="im.refreshWeek()"/>
+    </div>
+    </div>
+</div>
+<hr/>
+<div class="row">
+  <div class="col-md-12">
+     <div class="col-md-2">
+        <button ui-sref="new" class="btn btn-sm btn-primary form-control"><i class="glyphicon glyphicon-plus"></i> New expense</button>
+    </div>
+
+    <div class="col-md-2">
+      <button class="btn btn-sm btn-primary form-control" ng-click="im.filters.dateTo=undefined;im.filters.dateFrom=undefined;im.filters.timeTo=undefined;im.filters.timeFrom=undefined; im.search=''"><i class="glyphicon glyphicon-refresh"></i> Clear Filters</button>
+    </div>
+     <div class="form-group">
+       <label class="col-md-3 control-label">Search: </label>
+       <div class="col-md-3">
+          <div class="input-group">
+           <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+           <input type="text" ng-model="im.search" class="form-control" placeholder="Search expenses here..."/>
+         </div>
+        </div>
+     </div>
+  </div>
+</div>
+<hr/>
+      <!--<input type="text" class="form-control" ng-model="im.filters.timeTo" bs-timepicker>-->
+
+  <!--<table class="table table-striped table-bordered table-hover">-->
+    <!--<tr>-->
+      <!--<th style="width:10%;"><i class="glyphicon glyphicon-calendar"></i>  Date</th>-->
+      <!--<th style="width:10%;"><i class="glyphicon glyphicon-time"></i>  Time</th>-->
+      <!--<th style="width:20%;"><i></i>Description</th>-->
+      <!--<th style="width:5% ;"><i></i>Amount</th>-->
+      <!--<th style="width:10%;"><i></i>Day sum</th>-->
+      <!--<th style="width:30%;"><i></i>Comment</th>-->
+      <!--<th style="width:15%;"><i class="glyphicon glyphicon-cog"></i>  Actions</th>-->
+    <!--</tr>-->
+    <!--<tr ng-repeat="exp in im.expenses | expenseFilter: im.filters">-->
+      <!--<td>{{ exp.dateTime | date:'MM-dd-yyyy' }}</td>-->
+      <!--<td>{{ exp.dateTime | date:'HH:mm a' }}</td>-->
+      <!--<td>{{ exp.description }}</td>-->
+      <!--<td>{{ exp.amount }}</td>-->
+      <!--<td>{{ exp.daySum }}/{{exp.averagePerDay}}</td>-->
+      <!--<td>{{ exp.comment }}</td>-->
+      <!--<td>-->
+        <!--<button ui-sref="edit({id: exp._id})" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-edit">Edit</i></button>-->
+        <!--<button ng-click="im.deleteExpense(exp)" class="btn btn-sm btn-danger"><i class="glyphicon glyphicon-trash">Delete</i></button>-->
+      <!--</td>-->
+    <!--</tr>-->
+  <!--</table>-->
+
+
+<table ng-table="im.tableParams" class="table table-striped table-bordered ">
+  <tbody ng-repeat="group in $groups">
+  <tr class="ng-table-group">
+    <td colspan="{{$columns.length}}">
+      <a href="" ng-click="group.$hideRows = !group.$hideRows">
+        <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
+        <strong>{{ group.value }}</strong></a>&nbsp;&nbsp;&nbsp;&nbsp;
+        Total: <strong>{{group.data.length}}</strong> expenses! Week summary: {{group.data[0].weekSum |currency:'€ ':'2'}}, week average: {{group.data[0].averagePerWeek|currency:'€ ':'2'}}
+
+    </td>
+  </tr>
+  <tr ng-hide="group.$hideRows" ng-repeat="expense in group.data | expenseFilter: im.filters | filter: im.search" >
+    <td style="width: 10%" sortable="date" data-title="'Date'">
+      {{expense.dateTime | date:'MM-dd-yyyy'}}
+    </td>
+    <td style="width: 10%" sortable="time" data-title="'Time'">
+    {{expense.dateTime | date:'HH:mm a'}}
+  </td>
+    <td style="width: 25%" sortable="description" data-title="'Description'">
+      {{expense.description}}
+    </td>
+    <td style="width: 10%" sortable="amount" data-title="'Amount'">
+      {{expense.amount |currency:'€ ':'2'}}
+    <td style="width: 30%" sortable="comment" data-title="'Comment'">
+      {{expense.comment}}
+    </td>
+    <td style="width: 15%" data-title="'Actions'">
+     <div class="btnContainter">
+       <button ui-sref="edit({id: expense._id})" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-edit"></i>Edit</button>
+      <button ng-click="im.deleteExpense('name',expense)" class="btn btn-sm btn-danger" data-toggle="modal"><i class="glyphicon glyphicon-trash"></i>Delete</button>
+     </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+
+  <div ng-include="'components/footer/footer.html'"></div>
+
+
+</div>
+

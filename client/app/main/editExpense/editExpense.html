@@ -1,0 +1,73 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<fieldset>
+<div class="form-horizontal">
+
+  <h2 class="col-sm-offset-2">Edit expense</h2>
+  <br/>
+
+  <div class="col-md-6">
+    <div class="form-group">
+      <label class="col-md-3 control-label">Date:</label>
+      <div class="col-md-9">
+        <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+        <input type="text" class="form-control" ng-model="editExp.temporary.dateTime" autoclose="true" bs-datepicker required></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-md-3 control-label">Time:</label>
+      <div class="col-md-9">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+          <input type="text" class="form-control" ng-model="editExp.temporary.dateTime" bs-timepicker required>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-md-3 control-label">Description:</label>
+      <div class="col-md-9">
+       <div class="input-group"> <span class="input-group-addon"><i class="glyphicon glyphicon-font"></i>  </span>
+        <input type="text" ng-model="editExp.temporary.description" class="form-control"/></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-md-3 control-label">Amount:</label>
+      <div class="col-md-9">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="glyphicon glyphicon-euro"></i>  </span>
+          <input type="number" ng-model="editExp.temporary.amount" class="form-control"/>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="form-group">
+      <label class="col-md-3 control-label">Comment:</label>
+      <div class="col-md-9">
+        <textarea name="textArea" cols="50" rows="3" class="form-control" ng-model="editExp.temporary.comment"></textarea>
+        <!--<br/>-->
+        <!--<button class="btn btn-sm btn-success" ng-click="editExp.saveExpense()" ng-disabled="!editExp.temporary.dateTime || !editExp.temporary.description || !editExp.temporary.amount || !editExp.temporary.comment"><i class="glyphicon glyphicon-floppy-disk">Save</i></button>-->
+        <!--<button class="btn btn-sm btn-danger" ui-sref="main"><i class="glyphicon glyphicon-th-list">Close</i></button>-->
+      </div>
+    </div>
+
+
+    <div class="form-group form-horizontal">
+      <div class="col-md-offset-4 col-md-8">
+        <p class="help-block"> {{ message }} </p>
+        <button class="btn btn btn-success" ng-click="editExp.saveExpense()" ng-disabled="!editExp.temporary.dateTime || !editExp.temporary.description || !editExp.temporary.amount || !editExp.temporary.comment"><i class="glyphicon glyphicon-floppy-disk"></i> Save & close</button>
+        <button class="btn btn btn-danger" ui-sref="main"><i class="glyphicon glyphicon-th-list"></i> Cancel & return</button>
+      </div>
+    </div>
+
+
+
+  </div>
+</div>
+  </fieldset>
+
+<div ng-include="'components/footer/footer.html'"></div>
