@@ -50,7 +50,7 @@
         );
       }
     }
-  };
+  }
 
   function timeService() {
     return {
@@ -101,7 +101,7 @@
         );
       }
     }
-  };
+  }
 
 
 

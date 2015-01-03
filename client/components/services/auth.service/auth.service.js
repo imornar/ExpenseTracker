@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('expenseTrackerApp')
-  .factory('Auth',['$location', '$rootScope', '$http', 'User', '$cookieStore', '$q', function Auth($location, $rootScope, $http, User, $cookieStore, $q) {
+  .factory('Auth',['$location', '$rootScope', '$http', 'User', '$cookieStore', '$q', function ($location, $rootScope, $http, User, $cookieStore, $q) {
     var currentUser = {};
     if($cookieStore.get('token')) {
       currentUser = User.get();
@@ -98,6 +98,7 @@ angular.module('expenseTrackerApp')
        * @return {Object} user
        */
       getCurrentUser: function() {
+
         return currentUser;
       },
 

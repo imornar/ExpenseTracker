@@ -4,6 +4,7 @@
 angular.module('expenseTrackerApp')
   .controller('PasswordSettingsCtrl',['$scope', 'User', 'Auth', '$location', function ($scope, User, Auth, $location) {
     $scope.errors = {};
+    $('#password').focus();
 
     $scope.changePassword = function(form) {
       $scope.submitted = true;

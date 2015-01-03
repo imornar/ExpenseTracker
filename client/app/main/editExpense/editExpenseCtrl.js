@@ -4,8 +4,9 @@
     .module('expenseTrackerApp')
     .controller('EditExpenseCtrl', EditExpenseCtrl);
 
-    EditExpenseCtrl.$inject=['$scope','$stateParams','$location','Expense'];
-      function EditExpenseCtrl($scope, $stateParams, $location, Expense) {
+    EditExpenseCtrl.$inject=['$stateParams','$location','Expense'];
+
+      function EditExpenseCtrl($stateParams, $location, Expense) {
         var editExp = this;
         var id = $stateParams.id;
 

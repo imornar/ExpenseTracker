@@ -21,3 +21,10 @@
 .modal-danger .modal-header {
   background: #d9534f;
 }
+
+
+.modal-open {
+  overflow: hidden;
+  position: relative;
+  left: -9px;
+}

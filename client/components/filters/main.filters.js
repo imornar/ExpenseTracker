@@ -1,12 +1,11 @@
-'use strict';
 (function(){
+'use strict';
 
 angular
   .module('expenseTrackerApp')
   .filter('dateFilter',dateFilter)
   .filter('timeFilter',timeFilter)
   .filter('expenseFilter',expenseFilter);
-
 
 dateFilter.$inject = ['dateService'];
 timeFilter.$inject = ['timeService'];
@@ -49,7 +48,7 @@ expenseFilter.$inject = ['$filter'];
         return data;
       }
     }
-  };
+  }
    function timeFilter(timeService) {
     return function(data, filters) {
       var res=[];
@@ -81,14 +80,13 @@ expenseFilter.$inject = ['$filter'];
         return data;
       }
     }
-  };
+  }
   function expenseFilter($filter) {
     return function(data, filters) {
       data = $filter('dateFilter')(data,filters);
       data = $filter('timeFilter')(data,filters);
       return data;
     };
-  };
-
+  }
 
 })();

@@ -23,7 +23,7 @@ angular.module('expenseTrackerApp')
        url: '/userDataSettings',
        templateUrl: 'app/account/settings/user.data.settings.html',
        controller: 'UserDataSettingsCtrl',
-        controllerAs:'data',
+       controllerAs:'data',
        authenticate: true
     });
   }]);

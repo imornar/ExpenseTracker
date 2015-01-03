@@ -4,9 +4,9 @@
     .module('expenseTrackerApp')
     .controller('MainCtrl', MainCtrl);
 
-      MainCtrl.$inject=['Modal','$state','$scope','Expense', 'Auth', 'ngTableParams','$filter','DatePrototypes','$timeout'];
+  MainCtrl.$inject=['$scope','Expense', 'Auth', 'ngTableParams','$filter','DatePrototypes'];
 
-      function MainCtrl(Modal, $state, $scope, Expense, Auth, ngTableParams, $filter, DatePrototypes, $timeout) {
+      function MainCtrl($scope, Expense, Auth, ngTableParams, $filter, DatePrototypes) {
         var im = this;
         im.expenses = [];
         im.me = {};
@@ -38,13 +38,9 @@
           im.tableParams.reload();
         };
 
-        //im.deleteExpense =  function (expense) {
-        //  deleteCallback(expense);
-        //};
-
-        im.deleteExpense = Modal.confirm.delete(function (expense) {
+        im.deleteExpense =  function (expense) {
           deleteCallback(expense);
-        });
+        };
 
         var recalculateExpenses = function (expenses) {
           angular.forEach(expenses, function (expense) {
@@ -56,6 +52,7 @@
                 temp += exp.amount;
               }
               });
+            expense.counter = counter;
             expense.weekSum = temp;
             expense.averagePerWeek = temp / counter;
           });
@@ -68,36 +65,26 @@
           })
         };
 
-          im.tableParams = new ngTableParams({
-            page: 1,            // show first page
-            count: 25,          // count per page
-            filter:{},
-            sorting: {
-              dateTime: 'asc'     // initial sorting
-            }
-          }, {
-            groupBy: 'weekOfYear',
-            counts:[10, 15, 25, 50, 100],
-            total: function () { return getData().length; },
-            getData: function ($defer, params) {
-              // use build-in angular filter
-              var orderedData = params.sorting() ?
-                $filter('orderBy')(im.expenses, im.tableParams.orderBy()) :
-                im.expenses;
-              $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-            }
-          });
-          im.tableParams.settings().$scope = $scope;
-
-        im.toPrint= function (data) {
-          angular.forEach(data, function (dat) {
-            im.tempExpenses.push(dat);
-          });
-          $state.go('print');
-        };
-
-      }
-
-
+        im.tableParams = new ngTableParams({
+          page: 1,            // show first page
+          count: 25,       // count per page
+          filter:{},
+          sorting: {
+            dateTime: 'asc'     // initial sorting
+          }
+        }, {
+          groupBy: 'weekOfYear',
+          counts:[5, 10, 15, 25, 50, 100],
+          total: function () { return getData().length; },
+          getData: function ($defer, params) {
+            params.total(im.expenses.length);
+            var orderedData = params.sorting() ?
+              $filter('orderBy')(im.expenses, im.tableParams.orderBy()) :
+              im.expenses;
+            $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+          }
+        });
+        im.tableParams.settings().$scope = $scope;
+    }
 
 })();

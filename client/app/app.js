@@ -6,11 +6,11 @@ angular.module('expenseTrackerApp', [
   'ngResource',
   'ngSanitize',
   'ui.router',
+  'ngAnimate',
   'ui.bootstrap',
   'mgcrea.ngStrap',
   'mgcrea.ngStrap.tooltip',
   'mgcrea.ngStrap.helpers.dateParser',
-  'ngAnimate',
   'mgcrea.ngStrap.dropdown',
   'ngTable'
 
