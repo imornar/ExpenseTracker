@@ -1,90 +1,103 @@
-'use strict';
 (function(){
+'use strict';
+
   angular
     .module('expenseTrackerApp')
     .controller('MainCtrl', MainCtrl);
 
-  MainCtrl.$inject=['$scope','Expense', 'Auth', 'ngTableParams','$filter','DatePrototypes'];
+  MainCtrl.$inject = ['$scope', 'ngTableParams', 'dataservice', 'common'];
 
-      function MainCtrl($scope, Expense, Auth, ngTableParams, $filter, DatePrototypes) {
-        var im = this;
-        im.expenses = [];
-        im.me = {};
-        im.me = Auth.getCurrentUser();
-        im.filters = {};
-        im.selectedWeek = 0;
-        im.search = '';
-        im.tempExpenses = [];
+function MainCtrl($scope, ngTableParams, dataservice, common) {
+    var im = this;
+    im.expenses = [];
+    im.filters = {};
+    im.selectedWeek = 0;
+    im.search = '';
+    im.tempExpenses = [];
+    common.Auth.getCurrentUser().then(function (me) {
+      im.me = me;
+    });
 
-        Expense.query({userId: im.me._id}, function (expenses) {
-          im.me = Auth.getCurrentUser();
-          assignWeekOfYear(expenses);
-          recalculateExpenses(expenses);
-          im.expenses = expenses;
-          im.tableParams.reload();
-        });
+   activate();
 
-        im.refreshWeek = function () {
-          if(im.selectedWeek!=null){
-          im.filters.dateFrom = new Date(im.selectedWeek.getFullYear(),im.selectedWeek.getMonth(),(im.selectedWeek.getDate()) - 3);
-          im.filters.dateTo = new Date(im.selectedWeek.getFullYear(),im.selectedWeek.getMonth(),(im.selectedWeek.getDate()) + 3);}
-        };
+   function activate(){
+   return getUserExpenses()
+      .then(function (expenses) {
+     })
+      .catch(function (err) {
+        console.log('Error detected in activate func: ', err);
+      })
+   }
 
-        var deleteCallback = function (input) {
-          var index = im.expenses.indexOf(input);
-          im.expenses.splice(index,1);
-          Expense.delete({id: input._id});
-          recalculateExpenses(im.expenses);
-          im.tableParams.reload();
-        };
+   function getUserExpenses(){
+     return dataservice.getExpenses()
+       .then(function (expenses) {
+           im.expenses = expenses;
+           im.tableParams.reload();
+           return im.expenses;
+     })
+       .catch(function (err) {
+           console.log('Error detected in getUserExpenses func: ', err);
+       })
+   }
 
-        im.deleteExpense =  function (expense) {
-          deleteCallback(expense);
-        };
 
-        var recalculateExpenses = function (expenses) {
-          angular.forEach(expenses, function (expense) {
-            var temp = 0;
-            var counter = 0;
-            angular.forEach(expenses, function (exp) {
-              if(expense.weekOfYear===exp.weekOfYear){
-                counter++;
-                temp += exp.amount;
-              }
-              });
-            expense.counter = counter;
-            expense.weekSum = temp;
-            expense.averagePerWeek = temp / counter;
-          });
-        };
+    im.refreshWeek = function () {
+      if(im.selectedWeek!=null){
+      im.filters.dateFrom = new Date(im.selectedWeek.getFullYear(),im.selectedWeek.getMonth(),(im.selectedWeek.getDate()) - 3);
+      im.filters.dateTo = new Date(im.selectedWeek.getFullYear(),im.selectedWeek.getMonth(),(im.selectedWeek.getDate()) + 3);}
+    };
 
-        var assignWeekOfYear = function (expenses) {
-          angular.forEach(expenses, function (expense) {
-            var tempDate = new Date(expense.dateTime);
-            expense.weekOfYear = tempDate.getWeekYear() + ' Year, week number: ' + tempDate.getWeek();
-          })
-        };
+    im.deleteExpense =  function (expense) {
+      dataservice.deleteCallback(im.expenses, expense);
+      im.tableParams.reload();
+    };
 
-        im.tableParams = new ngTableParams({
-          page: 1,            // show first page
-          count: 25,       // count per page
-          filter:{},
-          sorting: {
-            dateTime: 'asc'     // initial sorting
-          }
-        }, {
-          groupBy: 'weekOfYear',
-          counts:[5, 10, 15, 25, 50, 100],
-          total: function () { return getData().length; },
-          getData: function ($defer, params) {
-            params.total(im.expenses.length);
-            var orderedData = params.sorting() ?
-              $filter('orderBy')(im.expenses, im.tableParams.orderBy()) :
-              im.expenses;
-            $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-          }
-        });
-        im.tableParams.settings().$scope = $scope;
-    }
+
+  im.peoples=[
+    {fname:'Ivan',lname:'Matic',bday:'1962/4/4', age:13},
+    {fname:'Jure',lname:'Mornar',bday:'1972/4/4', age:33},
+    {fname:'Pale',lname:'Lukic',bday:'1982/4/4', age:22},
+    {fname:'Perko',lname:'Baric',bday:'1992/4/4', age:19},
+    {fname:'dragica',lname:'vucic',bday:'2012/4/4', age:49},
+    {fname:'Pasko',lname:'Matic',bday:'1978/4/4', age:58},
+    {fname:'Denis',lname:'Subasic',bday:'1969/4/4', age:17},
+    {fname:'Andrea',lname:'Platikosa',bday:'1989/4/4', age:36},
+    {fname:'Marica',lname:'Kovac',bday:'2007/4/4', age:42},
+    {fname:'Toni',lname:'Mandzukic',bday:'2009/4/4', age:12}
+  ];
+
+
+
+
+
+
+
+
+
+
+
+
+    im.tableParams = new ngTableParams({
+      page:  1,
+      count: 25,
+      filter:{},
+      sorting: {
+        dateTime: 'asc'
+      }
+    }, {
+      groupBy: 'weekOfYear',
+      counts:[5, 10, 15, 25, 50, 100],
+      total: function () { return getData().length; },
+      getData: function ($defer, params) {
+        params.total(im.expenses.length);
+        var orderedData = params.sorting() ?
+          common.$filter('orderBy')(im.expenses, im.tableParams.orderBy()) :
+          im.expenses;
+        $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+      }
+    });
+    im.tableParams.settings().$scope = $scope;
+   }
 
 })();
