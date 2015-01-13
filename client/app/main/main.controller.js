@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-//bezveze
+
   angular
     .module('expenseTrackerApp')
     .controller('MainCtrl', MainCtrl);
@@ -51,31 +51,6 @@ function MainCtrl($scope, ngTableParams, dataservice, common) {
       dataservice.deleteCallback(im.expenses, expense);
       im.tableParams.reload();
     };
-
-
-  im.peoples=[
-    {fname:'Ivan',lname:'Matic',bday:'1962/4/4', age:13},
-    {fname:'Jure',lname:'Mornar',bday:'1972/4/4', age:33},
-    {fname:'Pale',lname:'Lukic',bday:'1982/4/4', age:22},
-    {fname:'Perko',lname:'Baric',bday:'1992/4/4', age:19},
-    {fname:'dragica',lname:'vucic',bday:'2012/4/4', age:49},
-    {fname:'Pasko',lname:'Matic',bday:'1978/4/4', age:58},
-    {fname:'Denis',lname:'Subasic',bday:'1969/4/4', age:17},
-    {fname:'Andrea',lname:'Platikosa',bday:'1989/4/4', age:36},
-    {fname:'Marica',lname:'Kovac',bday:'2007/4/4', age:42},
-    {fname:'Toni',lname:'Mandzukic',bday:'2009/4/4', age:12}
-  ];
-
-
-
-
-
-
-
-
-
-
-
 
     im.tableParams = new ngTableParams({
       page:  1,
