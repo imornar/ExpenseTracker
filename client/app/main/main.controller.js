@@ -40,7 +40,7 @@ function MainCtrl($scope, ngTableParams, dataservice, common) {
            console.log('Error detected in getUserExpenses func: ', err);
        })
    }
-
+  https://github.com/imornar/ExpenseTracker
 
     im.refreshWeek = function () {
       if(im.selectedWeek!=null){

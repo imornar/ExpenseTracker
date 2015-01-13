@@ -293,6 +293,14 @@ module.exports = function (grunt) {
           src: '*/**.js',
           dest: '.tmp/concat'
         }]
+      },
+        options: {
+          add: true,
+          singleQuotes: true
+        },
+
+        your_target: {
+          // Target-specific file lists and/or options go here.
       }
     },
 
@@ -492,10 +500,15 @@ module.exports = function (grunt) {
           ]
         }
       }
-    },
+    }
   });
 
+  grunt.loadNpmTasks('grunt-ng-annotate');
+
   // Used for delaying livereload until after server has restarted
+
+
+
   grunt.registerTask('wait', function () {
     grunt.log.ok('Waiting for server reload...');
 

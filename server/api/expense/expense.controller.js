@@ -12,6 +12,12 @@
 var _ = require('lodash');
 var Expense = require('./expense.model');
 
+var isUserOwner = function(content, user) {
+  if(content.userId == user.id)
+    return true;
+  return false;
+};
+
 // Get list of expenses
 exports.index = function(req, res) {
   if (req.user.role === 'admin'){
@@ -41,7 +47,7 @@ exports.show = function(req, res) {
 
 // Creates a new expense in the DB.
 exports.create = function(req, res) {
-  var newExpense = Expense(req.body);
+  var newExpense = new Expense(req.body);
   newExpense.userId=req.user._id;
   Expense.create(newExpense, function(err, expense) {
     if(err) {
@@ -56,7 +62,7 @@ exports.update = function(req, res) {
   Expense.findById(req.params.id, function (err, expense) {
     if (err) { return handleError(res, err);}
     if(!expense) { return res.send(404);}
-    if(!isUserOwner(expense, req.user) &&  req.user.role!='admin') {res.send(403)};
+    if(!isUserOwner(expense, req.user) &&  req.user.role!=='admin') {res.send(403)}
     if(isUserOwner(expense, req.user) || req.user.role==='admin'){
     var updated = _.merge(expense, req.body);
     updated.save(function (err) {
@@ -76,14 +82,8 @@ exports.destroy = function(req, res) {
     expense.remove(function(err) {
       if(err) { return handleError(res, err); }
       return res.send(204);
-    });}else{ {res.send(403)};}
+    });}else{ res.send(403)}
   });
-};
-
-var isUserOwner = function(content, user) {
-  if(content.userId == user.id)
-    return true;
-  return false;
 };
 
 

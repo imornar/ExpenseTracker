@@ -3,7 +3,7 @@
 
 
 angular.module('expenseTrackerApp')
-  .controller('SignupCtrl',['$scope', 'Auth', '$location', function ($scope, Auth, $location) {
+  .controller('SignupCtrl',['$scope', 'common', function ($scope, common) {
     $scope.user = {};
     $scope.errors = {};
 
@@ -11,7 +11,7 @@ angular.module('expenseTrackerApp')
       $scope.submitted = true;
 
       if(form.$valid) {
-        Auth.createUser({
+        common.Auth.createUser({
           name: $scope.user.name,
           email: $scope.user.email,
           password: $scope.user.password

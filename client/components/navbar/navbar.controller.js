@@ -12,7 +12,9 @@ angular.module('expenseTrackerApp')
     $scope.isCollapsed = true;
     $scope.isLoggedIn = Auth.isLoggedIn;
     $scope.isAdmin = Auth.isAdmin;
-    $scope.getCurrentUser = Auth.getCurrentUser;
+    Auth.getCurrentUser().then(function (me) {
+      $scope.current = me;
+    });
 
     $scope.logout = function() {
       Auth.logout();
@@ -26,7 +28,7 @@ angular.module('expenseTrackerApp')
     $scope.dropdown =[
       {"text": "<i class='fa fa-user'></i><span>&nbsp;My Profile</span>",
         "href": "userDataSettings"}, {
-        "text": '<i class="fa fa-key"></i><span>&nbsp;My Passwod</span>',
+        "text": '<i class="fa fa-key"></i><span>&nbsp;My Password</span>',
         "href": "settings"},{
         "divider":true},{
       "text": "<i class='glyphicon glyphicon-log-out'></i><span>&nbsp;LogOut</span>",

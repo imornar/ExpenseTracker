@@ -2,7 +2,7 @@
 (function () {
 
 angular.module('expenseTrackerApp')
-  .controller('LoginCtrl',['$scope', 'Auth', '$location', function ($scope, Auth, $location) {
+  .controller('LoginCtrl',['$scope', 'common', function ($scope, common) {
     $scope.user = {};
     $scope.errors = {};
 
@@ -10,13 +10,13 @@ angular.module('expenseTrackerApp')
       $scope.submitted = true;
 
       if(form.$valid) {
-        Auth.login({
+        common.Auth.login({
           email: $scope.user.email,
           password: $scope.user.password
         })
         .then( function() {
           // Logged in, redirect to home
-          $location.path('/');
+          common.$location.path('/');
         })
         .catch( function(err) {
           $scope.errors.other = err.message;

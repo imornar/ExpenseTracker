@@ -8,6 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <base href="/">
     <title></title>
+
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -70,6 +71,9 @@
       <script src="bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
       <script src="bower_components/ng-table/ng-table.js"></script>
       <script src="bower_components/ng-table-export/ng-table-export.js"></script>
+      <script src="bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
+      <script src="bower_components/moment/moment.js"></script>
+      <script src="bower_components/underscore/underscore.js"></script>
       <!-- endbower -->
     <!-- endbuild -->
 
@@ -89,15 +93,17 @@
           <script src="app/main/main.js"></script>
           <script src="app/main/newExpense/newExpense.js"></script>
           <script src="app/main/newExpense/newExpenseCtrl.js"></script>
+          <script src="components/core/common.js"></script>
+          <script src="components/core/expense.resource.js"></script>
+          <script src="components/core/user.resource.js"></script>
           <script src="components/directives/mongoose-error/mongoose-error.directive.js"></script>
           <script src="components/directives/myDatePicker/myDatePicker.directive.js"></script>
           <script src="components/filters/main.filters.js"></script>
           <script src="components/navbar/navbar.controller.js"></script>
           <script src="components/services/auth.service/auth.service.js"></script>
-          <script src="components/services/auth.service/user.service.js"></script>
+          <script src="components/services/data/dataservice.js"></script>
           <script src="components/services/dateFilter.service/date.filter.service.js"></script>
           <script src="components/services/datePrototypes/date.prototypes.js"></script>
-          <script src="components/services/expense.service/expense.service.js"></script>
           <script src="components/services/modal/modal.js"></script>
           <!-- endinjector -->
         <!-- endbuild -->

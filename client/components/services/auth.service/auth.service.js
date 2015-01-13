@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('expenseTrackerApp')
-  .factory('Auth',['$location', '$rootScope', '$http', 'User', '$cookieStore', '$q', function ($location, $rootScope, $http, User, $cookieStore, $q) {
+  .factory('Auth',['$location', '$rootScope', '$http', 'userResource', '$cookieStore', '$q', function ($location, $rootScope, $http, userResource, $cookieStore, $q) {
     var currentUser = {};
     if($cookieStore.get('token')) {
-      currentUser = User.get();
+      currentUser = userResource.get();
     }
 
     return {
@@ -26,7 +26,7 @@ angular.module('expenseTrackerApp')
         }).
         success(function(data) {
           $cookieStore.put('token', data.token);
-          currentUser = User.get();
+          currentUser = userResource.get();
           deferred.resolve(data);
           return cb();
         }).
@@ -59,10 +59,10 @@ angular.module('expenseTrackerApp')
       createUser: function(user, callback) {
         var cb = callback || angular.noop;
 
-        return User.save(user,
+        return userResource.save(user,
           function(data) {
             $cookieStore.put('token', data.token);
-            currentUser = User.get();
+            currentUser = userResource.get();
             return cb(user);
           },
           function(err) {
@@ -82,7 +82,7 @@ angular.module('expenseTrackerApp')
       changePassword: function(oldPassword, newPassword, callback) {
         var cb = callback || angular.noop;
 
-        return User.changePassword({ id: currentUser._id }, {
+        return userResource.changePassword({ id: currentUser._id }, {
           oldPassword: oldPassword,
           newPassword: newPassword
         }, function(user) {
@@ -98,8 +98,14 @@ angular.module('expenseTrackerApp')
        * @return {Object} user
        */
       getCurrentUser: function() {
-
-        return currentUser;
+        var deferred = $q.defer();
+        try {
+          if(currentUser)
+          deferred.resolve(currentUser);
+        } catch (e) {
+         deferred.reject(e)
+        }
+        return deferred.promise;
       },
 
       /**

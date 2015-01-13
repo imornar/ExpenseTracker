@@ -56,7 +56,6 @@ exports.show = function (req, res, next) {
 exports.destroy = function(req, res) {
   User.findByIdAndRemove(req.params.id, function(err, user) {
     if(err) return res.send(500, err);
-    if(user.id == req.user.id) return res.send(403,'cant erase yourself');
     return res.send(204);
   });
 };

@@ -7,7 +7,7 @@
       <br/>
       <div class="form-group">
         <label class="col-md-3 control-label">Name:</label>
-        <div class="col-md-9">
+        <div class="col-md-9">{{user}}
           <input type="text" class="form-control" ng-model="data.tempMe.name"/>
         </div>
       </div>
@@ -29,8 +29,8 @@
       <div class="form-group">
         <label class="col-md-3 control-label"></label>
 
-        <div class="col-md-9 btnContainter">
-          <p class="help-block"> {{ message }} </p>
+        <div class="col-md-9 btnContainer">
+          <p class="help-block"> {{message}} </p>
           <button class="btn btn btn-success" ng-click="data.saveUsersData()"><i class="glyphicon glyphicon-floppy-disk"></i> Save users data</button>
           <button class="btn btn btn-danger" ng-click="returnToExpenses()"><i class="glyphicon glyphicon-list"></i> Return to expenses</button>
         </div>

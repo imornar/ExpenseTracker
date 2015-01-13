@@ -1,15 +1,15 @@
-'use strict';
 (function () {
+'use strict';
 
 angular.module('expenseTrackerApp')
-  .controller('PasswordSettingsCtrl',['$scope', 'User', 'Auth', '$location', function ($scope, User, Auth, $location) {
+  .controller('PasswordSettingsCtrl',['$scope', 'common', function ($scope, common) {
     $scope.errors = {};
     $('#password').focus();
 
     $scope.changePassword = function(form) {
       $scope.submitted = true;
       if(form.$valid) {
-        Auth.changePassword( $scope.user.oldPassword, $scope.user.newPassword )
+        common.Auth.changePassword($scope.user.oldPassword,$scope.user.newPassword)
         .then( function() {
           $scope.message = 'Password successfully changed.';
         })
@@ -22,7 +22,9 @@ angular.module('expenseTrackerApp')
 		};
 
     $scope.returnToExpenses= function () {
-      $location.path('/');
+      common.$location.path('/');
     }
+
   }]);
+
 })();

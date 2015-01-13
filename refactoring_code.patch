@@ -1,0 +1,987 @@
+Index: client/app/account/settings/user.data.settings.ctrl.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/app/account/settings/user.data.settings.ctrl.js	(date 1421141301000)
++++ client/app/account/settings/user.data.settings.ctrl.js	(revision )
+@@ -2,15 +2,17 @@
+ (function () {
+ 
+ angular.module('expenseTrackerApp')
+-  .controller('UserDataSettingsCtrl',['$scope', 'User', 'Auth', '$location', function ($scope, User, Auth, $location) {
++  .controller('UserDataSettingsCtrl',['$scope', 'userResource', 'common', function ($scope, userResource, common) {
+     var data = this;
+     data.errors = {};
+-    data.me = Auth.getCurrentUser();
+     data.tempMe = {};
++    common.Auth.getCurrentUser().then(function (me) {
++      data.me = me;
+-    data.tempMe = Object.create(data.me);
++      data.tempMe = Object.create(data.me);
++    });
+ 
+     data.saveUsersData= function () {
+-      User.update({id:data.tempMe._id},data.tempMe)
++      userResource.update({id:data.tempMe._id},data.tempMe)
+         .$promise.then(function (response) {
+           data.me.name = response.name;
+           data.me.email = response.email;
+@@ -20,7 +22,7 @@
+     };
+ 
+     $scope.returnToExpenses= function () {
+-      $location.path('/');
++      common.$location.path('/');
+     }
+   }]);
+ 
+Index: bower.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- bower.json	(date 1421141301000)
++++ bower.json	(revision )
+@@ -16,10 +16,14 @@
+     "angular-ui-router": "~0.2.10",
+     "angular-strap": "~2.1.4",
+     "ng-table": "~0.3.3",
+-    "ng-table-export": "*"
++    "ng-table-export": "*",
++    "angular-local-storage": "~0.1.5",
++    "moment": "~2.9.0",
++    "underscore": "~1.7.0"
+   },
+   "devDependencies": {
+     "angular-mocks": ">=1.2.*",
+-    "angular-scenario": ">=1.2.*"
++    "angular-scenario": ">=1.2.*",
++    "ngAnnotate": "*"
+   }
+ }
+Index: server/api/expense/expense.spec.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- server/api/expense/expense.spec.js	(date 1421141301000)
++++ server/api/expense/expense.spec.js	(revision )
+@@ -1,0 +1,0 @@
+Index: client/components/services/auth.service/auth.service.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/components/services/auth.service/auth.service.js	(date 1421141301000)
++++ client/components/services/auth.service/auth.service.js	(revision )
+@@ -1,10 +1,10 @@
+ 'use strict';
+ 
+ angular.module('expenseTrackerApp')
+-  .factory('Auth',['$location', '$rootScope', '$http', 'User', '$cookieStore', '$q', function ($location, $rootScope, $http, User, $cookieStore, $q) {
++  .factory('Auth',['$location', '$rootScope', '$http', 'userResource', '$cookieStore', '$q', function ($location, $rootScope, $http, userResource, $cookieStore, $q) {
+     var currentUser = {};
+     if($cookieStore.get('token')) {
+-      currentUser = User.get();
++      currentUser = userResource.get();
+     }
+ 
+     return {
+@@ -26,7 +26,7 @@
+         }).
+         success(function(data) {
+           $cookieStore.put('token', data.token);
+-          currentUser = User.get();
++          currentUser = userResource.get();
+           deferred.resolve(data);
+           return cb();
+         }).
+@@ -59,10 +59,10 @@
+       createUser: function(user, callback) {
+         var cb = callback || angular.noop;
+ 
+-        return User.save(user,
++        return userResource.save(user,
+           function(data) {
+             $cookieStore.put('token', data.token);
+-            currentUser = User.get();
++            currentUser = userResource.get();
+             return cb(user);
+           },
+           function(err) {
+@@ -82,7 +82,7 @@
+       changePassword: function(oldPassword, newPassword, callback) {
+         var cb = callback || angular.noop;
+ 
+-        return User.changePassword({ id: currentUser._id }, {
++        return userResource.changePassword({ id: currentUser._id }, {
+           oldPassword: oldPassword,
+           newPassword: newPassword
+         }, function(user) {
+@@ -98,8 +98,14 @@
+        * @return {Object} user
+        */
+       getCurrentUser: function() {
+-
+-        return currentUser;
++        var deferred = $q.defer();
++        try {
++          if(currentUser)
++          deferred.resolve(currentUser);
++        } catch (e) {
++         deferred.reject(e)
++        }
++        return deferred.promise;
+       },
+ 
+       /**
+Index: client/app/main/newExpense/newExpenseCtrl.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/app/main/newExpense/newExpenseCtrl.js	(date 1421141301000)
++++ client/app/main/newExpense/newExpenseCtrl.js	(revision )
+@@ -5,22 +5,22 @@
+     .module('expenseTrackerApp')
+     .controller('NewExpenseCtrl', NewExpenseCtrl);
+ 
+-  NewExpenseCtrl.$inject = ['Expense', '$location','Auth'];
++  NewExpenseCtrl.$inject = ['expenseResource', 'common'];
+ 
+-  function NewExpenseCtrl(Expense,$location,Auth) {
++  function NewExpenseCtrl(expenseResource,common) {
+     var newExp = this;
+     newExp.temporary = {};
+     newExp.temporary.dateTime = new Date();
+     newExp.temporary.dateTime.setSeconds(null);
+     newExp.temporary.dateTime.setMilliseconds(null);
+     newExp.me = {};
+-    newExp.me = Auth.getCurrentUser();
++    newExp.me = common.Auth.getCurrentUser();
+     $('#focus').focus();
+ 
+     newExp.saveNewExpense= function () {
+       newExp.temporary.daySum=newExp.temporary.amount;
+-      Expense.save(newExp.temporary);
+-      $location.path('/')
++      expenseResource.save(newExp.temporary);
++      common.$location.path('/')
+     };
+ 
+   }
+Index: package.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- package.json	(date 1421141301000)
++++ package.json	(revision )
+@@ -23,9 +23,12 @@
+     "connect-mongo": "^0.4.1"
+   },
+   "devDependencies": {
++    "connect-livereload": "~0.4.0",
+     "grunt": "~0.4.4",
++    "grunt-angular-templates": "^0.5.4",
++    "grunt-asset-injector": "^0.1.0",
+     "grunt-autoprefixer": "~0.7.2",
+-    "grunt-wiredep": "~1.8.0",
++    "grunt-build-control": "DaftMonk/grunt-build-control",
+     "grunt-concurrent": "~0.5.0",
+     "grunt-contrib-clean": "~0.5.0",
+     "grunt-contrib-concat": "~0.4.0",
+@@ -36,45 +39,42 @@
+     "grunt-contrib-jshint": "~0.10.0",
+     "grunt-contrib-uglify": "~0.4.0",
+     "grunt-contrib-watch": "~0.6.1",
++    "grunt-dom-munger": "^3.4.0",
++    "grunt-env": "~0.4.1",
++    "grunt-express-server": "~0.4.17",
+     "grunt-google-cdn": "~0.4.0",
++    "grunt-karma": "~0.8.2",
++    "grunt-mocha-test": "~0.10.2",
+     "grunt-newer": "~0.7.0",
+-    "grunt-ng-annotate": "^0.2.3",
+-    "grunt-rev": "~0.1.0",
+-    "grunt-svgmin": "~0.4.0",
+-    "grunt-usemin": "~2.1.1",
+-    "grunt-env": "~0.4.1",
++    "grunt-ng-annotate": "^0.8.0",
+     "grunt-node-inspector": "~0.1.5",
+     "grunt-nodemon": "~0.2.0",
+-    "grunt-angular-templates": "^0.5.4",
+-    "grunt-dom-munger": "^3.4.0",
++    "grunt-open": "~0.2.3",
+     "grunt-protractor-runner": "^1.1.0",
+-    "grunt-asset-injector": "^0.1.0",
+-    "grunt-karma": "~0.8.2",
+-    "grunt-build-control": "DaftMonk/grunt-build-control",
+-    "grunt-mocha-test": "~0.10.2",
++    "grunt-rev": "~0.1.0",
++    "grunt-svgmin": "~0.4.0",
++    "grunt-usemin": "~2.1.1",
++    "grunt-wiredep": "~1.8.0",
+     "jit-grunt": "^0.5.0",
+-    "time-grunt": "~0.3.1",
+-    "grunt-express-server": "~0.4.17",
+-    "grunt-open": "~0.2.3",
+-    "open": "~0.0.4",
+     "jshint-stylish": "~0.1.5",
+-    "connect-livereload": "~0.4.0",
+-    "karma-ng-scenario": "~0.1.0",
+-    "karma-firefox-launcher": "~0.1.3",
+-    "karma-script-launcher": "~0.1.0",
+-    "karma-html2js-preprocessor": "~0.1.0",
+-    "karma-ng-jade2js-preprocessor": "^0.1.2",
+-    "karma-jasmine": "~0.1.5",
++    "karma": "~0.12.9",
+     "karma-chrome-launcher": "~0.1.3",
+-    "requirejs": "~2.1.11",
+-    "karma-requirejs": "~0.2.1",
+     "karma-coffee-preprocessor": "~0.2.1",
++    "karma-firefox-launcher": "~0.1.3",
++    "karma-html2js-preprocessor": "~0.1.0",
+     "karma-jade-preprocessor": "0.0.11",
+-    "karma-phantomjs-launcher": "~0.1.4",
+-    "karma": "~0.12.9",
++    "karma-jasmine": "~0.1.5",
+     "karma-ng-html2js-preprocessor": "~0.1.0",
++    "karma-ng-jade2js-preprocessor": "^0.1.2",
++    "karma-ng-scenario": "~0.1.0",
++    "karma-phantomjs-launcher": "~0.1.4",
++    "karma-requirejs": "~0.2.1",
++    "karma-script-launcher": "~0.1.0",
++    "open": "~0.0.4",
++    "requirejs": "~2.1.11",
++    "should": "~3.3.1",
+     "supertest": "~0.11.0",
+-    "should": "~3.3.1"
++    "time-grunt": "~0.3.1"
+   },
+   "engines": {
+     "node": ">=0.10.0"
+Index: client/index.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/index.html	(date 1421141301000)
++++ client/index.html	(revision )
+@@ -8,6 +8,7 @@
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <base href="/">
+     <title></title>
++
+     <meta name="description" content="">
+     <meta name="viewport" content="width=device-width">
+     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+@@ -70,6 +71,9 @@
+       <script src="bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
+       <script src="bower_components/ng-table/ng-table.js"></script>
+       <script src="bower_components/ng-table-export/ng-table-export.js"></script>
++      <script src="bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
++      <script src="bower_components/moment/moment.js"></script>
++      <script src="bower_components/underscore/underscore.js"></script>
+       <!-- endbower -->
+     <!-- endbuild -->
+ 
+@@ -89,15 +93,17 @@
+           <script src="app/main/main.js"></script>
+           <script src="app/main/newExpense/newExpense.js"></script>
+           <script src="app/main/newExpense/newExpenseCtrl.js"></script>
++          <script src="components/core/common.js"></script>
++          <script src="components/core/expense.resource.js"></script>
++          <script src="components/core/user.resource.js"></script>
+           <script src="components/directives/mongoose-error/mongoose-error.directive.js"></script>
+           <script src="components/directives/myDatePicker/myDatePicker.directive.js"></script>
+           <script src="components/filters/main.filters.js"></script>
+           <script src="components/navbar/navbar.controller.js"></script>
+           <script src="components/services/auth.service/auth.service.js"></script>
+-          <script src="components/services/auth.service/user.service.js"></script>
++          <script src="components/services/data/dataservice.js"></script>
+           <script src="components/services/dateFilter.service/date.filter.service.js"></script>
+           <script src="components/services/datePrototypes/date.prototypes.js"></script>
+-          <script src="components/services/expense.service/expense.service.js"></script>
+           <script src="components/services/modal/modal.js"></script>
+           <!-- endinjector -->
+         <!-- endbuild -->
+Index: client/app/account/login/login.controller.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/app/account/login/login.controller.js	(date 1421141301000)
++++ client/app/account/login/login.controller.js	(revision )
+@@ -2,7 +2,7 @@
+ (function () {
+ 
+ angular.module('expenseTrackerApp')
+-  .controller('LoginCtrl',['$scope', 'Auth', '$location', function ($scope, Auth, $location) {
++  .controller('LoginCtrl',['$scope', 'common', function ($scope, common) {
+     $scope.user = {};
+     $scope.errors = {};
+ 
+@@ -10,13 +10,13 @@
+       $scope.submitted = true;
+ 
+       if(form.$valid) {
+-        Auth.login({
++        common.Auth.login({
+           email: $scope.user.email,
+           password: $scope.user.password
+         })
+         .then( function() {
+           // Logged in, redirect to home
+-          $location.path('/');
++          common.$location.path('/');
+         })
+         .catch( function(err) {
+           $scope.errors.other = err.message;
+Index: client/app/app.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/app/app.js	(date 1421141301000)
++++ client/app/app.js	(revision )
+@@ -2,12 +2,11 @@
+ (function () {
+ 
+ angular.module('expenseTrackerApp', [
++  'common.services',
+   'ngCookies',
+-  'ngResource',
+   'ngSanitize',
+   'ui.router',
+   'ngAnimate',
+-  'ui.bootstrap',
+   'mgcrea.ngStrap',
+   'mgcrea.ngStrap.tooltip',
+   'mgcrea.ngStrap.helpers.dateParser',
+@@ -23,7 +22,7 @@
+     $httpProvider.interceptors.push('authInterceptor');
+   }])
+ 
+-  .factory('authInterceptor',['$rootScope', '$q', '$cookieStore', '$location', function ($rootScope, $q, $cookieStore, $location) {
++  .factory('authInterceptor',['$cookieStore', '$q', '$location', function ($cookieStore, $q, $location) {
+     return {
+       // Add authorization token to headers
+       request: function (config) {
+@@ -37,7 +36,7 @@
+       // Intercept 401s and redirect you to login
+       responseError: function(response) {
+         if(response.status === 401) {
+-          $location.path('/login');
++         $location.path('/login');
+           // remove any stale tokens
+           $cookieStore.remove('token');
+           return $q.reject(response);
+Index: karma.conf.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- karma.conf.js	(date 1421141301000)
++++ karma.conf.js	(revision )
+@@ -21,6 +21,10 @@
+       'client/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+       'client/bower_components/lodash/dist/lodash.compat.js',
+       'client/bower_components/angular-ui-router/release/angular-ui-router.js',
++      'client/bower_components/ng-table/ng-table.js',
++      'client/bower_components/angular-animate/angular-animate.js',
++      'client/bower_components/angular-strap/dist/angular-strap.js',
++      'client/bower_components/angular-strap/dist/angular-strap.tpl.js',
+       'client/app/app.js',
+       'client/app/app.coffee',
+       'client/app/**/*.js',
+@@ -70,7 +74,7 @@
+     // - Safari (only Mac)
+     // - PhantomJS
+     // - IE (only Windows)
+-    browsers: ['PhantomJS'],
++    browsers: ['Chrome'],
+ 
+ 
+     // Continuous Integration mode
+Index: client/app/main/main.controller.spec.js
+===================================================================
+--- client/app/main/main.controller.spec.js	(date 1421141301000)
++++ client/app/main/main.controller.spec.js	(date 1421141301000)
+@@ -1,28 +0,0 @@
+-'use strict';
+-
+-describe('Controller: MainCtrl', function () {
+-
+-  // load the controller's module
+-  beforeEach(module('expenseTrackerApp'));
+-
+-  var MainCtrl,
+-      scope,
+-      $httpBackend;
+-
+-  // Initialize the controller and a mock scope
+-  beforeEach(inject(function (_$httpBackend_, $controller, $rootScope) {
+-    $httpBackend = _$httpBackend_;
+-    $httpBackend.expectGET('/api/expenses')
+-      .respond(['HTML5 Boilerplate', 'AngularJS', 'Karma', 'Express']);
+-
+-    scope = $rootScope.$new();
+-    MainCtrl = $controller('MainCtrl', {
+-      $scope: scope
+-    });
+-  }));
+-
+-  it('should attach a list of expenses to the scope', function () {
+-    $httpBackend.flush();
+-    expect(scope.awesomeExpenses.length).toBe(4);
+-  });
+-});
+Index: client/app/account/settings/password.settings.controller.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/app/account/settings/password.settings.controller.js	(date 1421141301000)
++++ client/app/account/settings/password.settings.controller.js	(revision )
+@@ -1,15 +1,15 @@
+-'use strict';
+ (function () {
++'use strict';
+ 
+ angular.module('expenseTrackerApp')
+-  .controller('PasswordSettingsCtrl',['$scope', 'User', 'Auth', '$location', function ($scope, User, Auth, $location) {
++  .controller('PasswordSettingsCtrl',['$scope', 'common', function ($scope, common) {
+     $scope.errors = {};
+     $('#password').focus();
+ 
+     $scope.changePassword = function(form) {
+       $scope.submitted = true;
+       if(form.$valid) {
+-        Auth.changePassword( $scope.user.oldPassword, $scope.user.newPassword )
++        common.Auth.changePassword($scope.user.oldPassword,$scope.user.newPassword)
+         .then( function() {
+           $scope.message = 'Password successfully changed.';
+         })
+@@ -22,7 +22,9 @@
+ 		};
+ 
+     $scope.returnToExpenses= function () {
+-      $location.path('/');
++      common.$location.path('/');
+     }
++
+   }]);
++
+ })();
+Index: client/app/main/main.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/app/main/main.html	(date 1421141301000)
++++ client/app/main/main.html	(revision )
+@@ -3,30 +3,34 @@
+ <div class="form-horizontal">
+   <div class="row">
+     <div class="col-md-4">
++    <div class="well well-sm">
+ 
+       <div class="form-group">
+         <label class="col-md-3 control-label">From:</label>
+-        <div class="col-md-9">
+-          <input type="text" class="form-control" ng-model="im.filters.dateFrom" autoclose="true" placeholder="Date from" bs-datepicker>
+-        </div>
++          <div class="col-md-9">
++            <input type="text" class="form-control" ng-model="im.filters.dateFrom" autoclose="true" placeholder="Date from" bs-datepicker>
++          </div>
+       </div>
+ 
+       <div class="form-group">
+         <label class="col-md-3 control-label">To:</label>
+-        <div class="col-md-9">
+-          <input type="text" class="form-control" ng-model="im.filters.dateTo" autoclose="true" placeholder="Date to" bs-datepicker>
+-        </div>
++          <div class="col-md-9">
++            <input type="text" class="form-control" ng-model="im.filters.dateTo" autoclose="true" placeholder="Date to" bs-datepicker>
++          </div>
+       </div>
+ 
+     </div>
++    </div>
+ 
+      <div class="col-md-4">
++       <div class="well well-sm">
++
+         <div class="form-group">
+           <label class="col-md-3 control-label">From:</label>
+           <div class="col-md-9">
+             <div class="input-group">
+               <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+-              <input type="time" style="height: 35px" ng-model="im.filters.timeFrom"class="form-control"/>
++              <input type="time" style="height: 35px" ng-model="im.filters.timeFrom" class="form-control"/>
+             </div>
+             </div>
+         </div>
+@@ -41,18 +45,19 @@
+         </div>
+         </div>
+ 
+-     </div>
++      </div>
++     </div>
+ 
+-    <div class="col-md-4">
++    <div class="col-md-4"><br/><br/>
+         <div class="form-group">
+-          <label class="col-md-3 control-label" >Week:</label>
+-          <input type="week" class="well well-sm" ng-model="im.selectedWeek" ng-change="im.refreshWeek()"/>
++          <label class="col-md-3 control-label" >Week:
++          <input type="week" class="well well-sm" ng-model="im.selectedWeek" ng-change="im.refreshWeek()"/></label>
+         </div>
+     </div>
+ 
+   </div>
+-  <hr/>
+ 
++
+   <div class="row">
+     <div class="col-md-12">
+ 
+@@ -76,7 +81,6 @@
+ 
+     </div>
+   </div>
+-  <hr/>
+ 
+   <table ng-table="im.tableParams" class="table table-striped table-bordered ">
+     <tbody ng-repeat="group in $groups">
+@@ -112,6 +116,7 @@
+     </tr>
+     </tbody>
+   </table>
++
+ 
+ <div ng-include="'components/footer/footer.html'"></div>
+ </div>
+Index: client/components/directives/myDatePicker/myDatePicker.directive.spec.js
+===================================================================
+--- client/components/directives/myDatePicker/myDatePicker.directive.spec.js	(date 1421141301000)
++++ client/components/directives/myDatePicker/myDatePicker.directive.spec.js	(date 1421141301000)
+@@ -1,21 +0,0 @@
+-'use strict';
+-
+-describe('Directive: myDatePicker', function () {
+-
+-  // load the directive's module and view
+-  beforeEach(module('expenseTrackerApp'));
+-  beforeEach(module('components/myDatePicker/myDatePicker.html'));
+-
+-  var element, scope;
+-
+-  beforeEach(inject(function ($rootScope) {
+-    scope = $rootScope.$new();
+-  }));
+-
+-  it('should make hidden element visible', inject(function ($compile) {
+-    element = angular.element('<my-date-picker></my-date-picker>');
+-    element = $compile(element)(scope);
+-    scope.$apply();
+-    expect(element.text()).toBe('this is the myDatePicker directive');
+-  }));
+-});
+\ No newline at end of file
+Index: client/components/services/expense.service/expense.service.js
+===================================================================
+--- client/components/services/expense.service/expense.service.js	(date 1421141301000)
++++ client/components/services/expense.service/expense.service.js	(date 1421141301000)
+@@ -1,14 +0,0 @@
+-'use strict';
+-(function(){
+-
+-angular
+-  .module('expenseTrackerApp')
+-  .factory('Expense', Expense);
+-
+-  Expense.$inject=['$resource'];
+-
+-    function Expense($resource) {
+-      return $resource('/api/expenses/:id',{id:'@id'},{update:{method:'PUT'}})
+-    }
+-
+-})();
+Index: client/app/main/editExpense/editExpenseCtrl.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/app/main/editExpense/editExpenseCtrl.js	(date 1421141301000)
++++ client/app/main/editExpense/editExpenseCtrl.js	(revision )
+@@ -4,19 +4,19 @@
+     .module('expenseTrackerApp')
+     .controller('EditExpenseCtrl', EditExpenseCtrl);
+ 
+-    EditExpenseCtrl.$inject=['$stateParams','$location','Expense'];
++    EditExpenseCtrl.$inject=['$stateParams','common','expenseResource'];
+ 
+-      function EditExpenseCtrl($stateParams, $location, Expense) {
++      function EditExpenseCtrl($stateParams, common, expenseResource) {
+         var editExp = this;
+         var id = $stateParams.id;
+ 
+-        Expense.get({ id: id }, function(expense) {
++        expenseResource.get({ id: id }, function(expense) {
+           editExp.temporary = expense;
+         });
+ 
+         editExp.saveExpense= function () {
+-          Expense.update({id: id}, editExp.temporary);
+-          $location.path('/');
++          expenseResource.update({id: id}, editExp.temporary);
++          common.$location.path('/');
+         }
+ 
+       };
+Index: client/components/services/datePrototypes/date.prototypes.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/components/services/datePrototypes/date.prototypes.js	(date 1421141301000)
++++ client/components/services/datePrototypes/date.prototypes.js	(revision )
+@@ -5,25 +5,31 @@
+     .module('expenseTrackerApp')
+     .factory('DatePrototypes', DatePrototypes);
+ 
+-  function DatePrototypes() {
++  function DatePrototypes(){
+-    return {
+-      getWeek: Date.prototype.getWeek = function() {
+-        var date = new Date(this.getTime());
++
++  var service= {
++    getWeek:getWeek,
++    getWeekYear:getWeekYear
++  };
++  return service;
++
++  function getWeek(date){
++     // var date = new Date(this.getTime());
+-        date.setHours(0, 0, 0, 0);
+-        // Thursday in current week decides the year.
+-        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+-        // January 4 is always in week 1.
+-        var week1 = new Date(date.getFullYear(), 0, 4);
+-        // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+-        return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
+-          - 3 + (week1.getDay() + 6) % 7) / 7);
++      date.setHours(0, 0, 0, 0);
++      // Thursday in current week decides the year.
++      date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
++      // January 4 is always in week 1.
++      var week1 = new Date(date.getFullYear(), 0, 4);
++      // Adjust to Thursday in week 1 and count number of weeks from date to week1.
++      return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
++        - 3 + (week1.getDay() + 6) % 7) / 7);
+-      },
+-      getWeekYear : Date.prototype.getWeekYear = function() {
+-      var date = new Date(this.getTime());
++  }
++    function getWeekYear(date){
++      //var date = new Date(this.getTime());
+       date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+       return date.getFullYear();
+-    }
++  }
+-    }
++
+-  }
++}
+ 
+ })();
+Index: client/app/admin/admin.controller.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/app/admin/admin.controller.js	(date 1421141301000)
++++ client/app/admin/admin.controller.js	(revision )
+@@ -1,30 +1,32 @@
+ 'use strict';
+ (function () {
+ 
++angular
++  .module('expenseTrackerApp')
++  .controller('AdminCtrl', AdminCtrl);
+ 
+-angular.module('expenseTrackerApp')
+-  .controller('AdminCtrl',['$scope', '$http', 'Auth', 'User','Modal','$timeout', function ($scope, $http, Auth, User, Modal,$timeout) {
++    AdminCtrl.$inject = ['$scope', 'userResource', 'dataservice', 'common'];
+ 
+-    // Use the User $resource to fetch all users
+-    $scope.users = User.query();
++    function AdminCtrl($scope, userResource, dataservice, common){
++
+     $scope.errors = '';
++    $scope.users = dataservice.getUsers();
+ 
+-
+-
+     $scope.delete =function(user) {
+-      var role= Auth.getCurrentUser().role;
+       if(user.role!='admin'){
+-      User.remove({ id: user._id });
++      userResource.remove({ id: user._id });
+       angular.forEach($scope.users, function(u, i) {
+         if (u === user) {
+           $scope.users.splice(i, 1);
+         }
+       })}else{
+         $scope.errors='you are not allowed to delete admin';
+-        $timeout(function () {
++        common.$timeout(function () {
+           $scope.errors = '';
+         },1000);
+-      };
+-     }
++      }
+-  }]);
++     }
++
++    }
++
+ })();
+Index: server/api/user/user.controller.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- server/api/user/user.controller.js	(date 1421141301000)
++++ server/api/user/user.controller.js	(revision )
+@@ -56,7 +56,6 @@
+ exports.destroy = function(req, res) {
+   User.findByIdAndRemove(req.params.id, function(err, user) {
+     if(err) return res.send(500, err);
+-    if(user.id == req.user.id) return res.send(403,'cant erase yourself');
+     return res.send(204);
+   });
+ };
+Index: client/app/account/signup/signup.controller.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/app/account/signup/signup.controller.js	(date 1421141301000)
++++ client/app/account/signup/signup.controller.js	(revision )
+@@ -3,7 +3,7 @@
+ 
+ 
+ angular.module('expenseTrackerApp')
+-  .controller('SignupCtrl',['$scope', 'Auth', '$location', function ($scope, Auth, $location) {
++  .controller('SignupCtrl',['$scope', 'common', function ($scope, common) {
+     $scope.user = {};
+     $scope.errors = {};
+ 
+@@ -11,7 +11,7 @@
+       $scope.submitted = true;
+ 
+       if(form.$valid) {
+-        Auth.createUser({
++        common.Auth.createUser({
+           name: $scope.user.name,
+           email: $scope.user.email,
+           password: $scope.user.password
+Index: client/components/services/auth.service/user.service.js
+===================================================================
+--- client/components/services/auth.service/user.service.js	(date 1421141301000)
++++ client/components/services/auth.service/user.service.js	(date 1421141301000)
+@@ -1,25 +0,0 @@
+-'use strict';
+-
+-angular.module('expenseTrackerApp')
+-  .factory('User',['$resource', function ($resource) {
+-    return $resource('/api/users/:id/:controller', {
+-      id: '@_id'
+-    },
+-    {
+-      changePassword: {
+-        method: 'PUT',
+-        params: {
+-          controller:'password'
+-        }
+-      },
+-      get: {
+-        method: 'GET',
+-        params: {
+-          id:'me'
+-        }
+-      },
+-      update: {
+-        method: 'PUT'
+-      }
+-	  });
+-  }]);
+Index: client/components/navbar/navbar.controller.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/components/navbar/navbar.controller.js	(date 1421141301000)
++++ client/components/navbar/navbar.controller.js	(revision )
+@@ -12,7 +12,9 @@
+     $scope.isCollapsed = true;
+     $scope.isLoggedIn = Auth.isLoggedIn;
+     $scope.isAdmin = Auth.isAdmin;
+-    $scope.getCurrentUser = Auth.getCurrentUser;
++    Auth.getCurrentUser().then(function (me) {
++      $scope.current = me;
++    });
+ 
+     $scope.logout = function() {
+       Auth.logout();
+@@ -26,7 +28,7 @@
+     $scope.dropdown =[
+       {"text": "<i class='fa fa-user'></i><span>&nbsp;My Profile</span>",
+         "href": "userDataSettings"}, {
+-        "text": '<i class="fa fa-key"></i><span>&nbsp;My Passwod</span>',
++        "text": '<i class="fa fa-key"></i><span>&nbsp;My Password</span>',
+         "href": "settings"},{
+         "divider":true},{
+       "text": "<i class='glyphicon glyphicon-log-out'></i><span>&nbsp;LogOut</span>",
+Index: client/app/account/settings/user.data.settings.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/app/account/settings/user.data.settings.html	(date 1421141301000)
++++ client/app/account/settings/user.data.settings.html	(revision )
+@@ -7,7 +7,7 @@
+       <br/>
+       <div class="form-group">
+         <label class="col-md-3 control-label">Name:</label>
+-        <div class="col-md-9">
++        <div class="col-md-9">{{user}}
+           <input type="text" class="form-control" ng-model="data.tempMe.name"/>
+         </div>
+       </div>
+@@ -29,8 +29,8 @@
+       <div class="form-group">
+         <label class="col-md-3 control-label"></label>
+ 
+-        <div class="col-md-9 btnContainter">
++        <div class="col-md-9 btnContainer">
+-          <p class="help-block"> {{ message }} </p>
++          <p class="help-block"> {{message}} </p>
+           <button class="btn btn btn-success" ng-click="data.saveUsersData()"><i class="glyphicon glyphicon-floppy-disk"></i> Save users data</button>
+           <button class="btn btn btn-danger" ng-click="returnToExpenses()"><i class="glyphicon glyphicon-list"></i> Return to expenses</button>
+         </div>
+Index: Gruntfile.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- Gruntfile.js	(date 1421141301000)
++++ Gruntfile.js	(revision )
+@@ -293,6 +293,14 @@
+           src: '*/**.js',
+           dest: '.tmp/concat'
+         }]
++      },
++        options: {
++          add: true,
++          singleQuotes: true
++        },
++
++        your_target: {
++          // Target-specific file lists and/or options go here.
+       }
+     },
+ 
+@@ -492,10 +500,15 @@
+           ]
+         }
+       }
+-    },
++    }
+   });
+ 
++  grunt.loadNpmTasks('grunt-ng-annotate');
++
+   // Used for delaying livereload until after server has restarted
++
++
++
+   grunt.registerTask('wait', function () {
+     grunt.log.ok('Waiting for server reload...');
+ 
+Index: server/api/expense/expense.controller.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- server/api/expense/expense.controller.js	(date 1421141301000)
++++ server/api/expense/expense.controller.js	(revision )
+@@ -12,6 +12,12 @@
+ var _ = require('lodash');
+ var Expense = require('./expense.model');
+ 
++var isUserOwner = function(content, user) {
++  if(content.userId == user.id)
++    return true;
++  return false;
++};
++
+ // Get list of expenses
+ exports.index = function(req, res) {
+   if (req.user.role === 'admin'){
+@@ -41,7 +47,7 @@
+ 
+ // Creates a new expense in the DB.
+ exports.create = function(req, res) {
+-  var newExpense = Expense(req.body);
++  var newExpense = new Expense(req.body);
+   newExpense.userId=req.user._id;
+   Expense.create(newExpense, function(err, expense) {
+     if(err) {
+@@ -56,7 +62,7 @@
+   Expense.findById(req.params.id, function (err, expense) {
+     if (err) { return handleError(res, err);}
+     if(!expense) { return res.send(404);}
+-    if(!isUserOwner(expense, req.user) &&  req.user.role!='admin') {res.send(403)};
++    if(!isUserOwner(expense, req.user) &&  req.user.role!=='admin') {res.send(403)}
+     if(isUserOwner(expense, req.user) || req.user.role==='admin'){
+     var updated = _.merge(expense, req.body);
+     updated.save(function (err) {
+@@ -76,14 +82,8 @@
+     expense.remove(function(err) {
+       if(err) { return handleError(res, err); }
+       return res.send(204);
+-    });}else{ {res.send(403)};}
++    });}else{ res.send(403)}
+   });
+-};
+-
+-var isUserOwner = function(content, user) {
+-  if(content.userId == user.id)
+-    return true;
+-  return false;
+ };
+ 
+ 
+Index: client/components/navbar/navbar.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- client/components/navbar/navbar.html	(date 1421141301000)
++++ client/components/navbar/navbar.html	(revision )
+@@ -22,7 +22,7 @@
+         <li ng-hide="isLoggedIn()" ng-class="{active: isActive('/signup')}"><a href="/signup">Sign up</a></li>
+         <li ng-hide="isLoggedIn()" ng-class="{active: isActive('/login')}"><a href="/login">Login</a></li>
+         <li ng-show="isLoggedIn()" ng-class="{active: isActive('/settings')}"><a html="true" data-animation="am-flip-x" bs-dropdown="dropdown"><span class="glyphicon glyphicon-cog"></span></a></li>
+-        <li ng-show="isLoggedIn()"><p class="navbar-text">Hello <strong>{{ getCurrentUser().name }}</strong></p> </li>
++        <li ng-show="isLoggedIn()"><p class="navbar-text">Hello <strong>{{current.name }}</strong></p> </li>
+       </ul>
+     </div>
+ 

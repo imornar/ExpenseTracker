@@ -2,12 +2,11 @@
 (function () {
 
 angular.module('expenseTrackerApp', [
+  'common.services',
   'ngCookies',
-  'ngResource',
   'ngSanitize',
   'ui.router',
   'ngAnimate',
-  'ui.bootstrap',
   'mgcrea.ngStrap',
   'mgcrea.ngStrap.tooltip',
   'mgcrea.ngStrap.helpers.dateParser',
@@ -23,7 +22,7 @@ angular.module('expenseTrackerApp', [
     $httpProvider.interceptors.push('authInterceptor');
   }])
 
-  .factory('authInterceptor',['$rootScope', '$q', '$cookieStore', '$location', function ($rootScope, $q, $cookieStore, $location) {
+  .factory('authInterceptor',['$cookieStore', '$q', '$location', function ($cookieStore, $q, $location) {
     return {
       // Add authorization token to headers
       request: function (config) {
@@ -37,7 +36,7 @@ angular.module('expenseTrackerApp', [
       // Intercept 401s and redirect you to login
       responseError: function(response) {
         if(response.status === 401) {
-          $location.path('/login');
+         $location.path('/login');
           // remove any stale tokens
           $cookieStore.remove('token');
           return $q.reject(response);
