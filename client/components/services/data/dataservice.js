@@ -37,7 +37,7 @@
     function getUsers() {
       return userResource.query(function (users) {
         return users;
-      })
+      }).$promise
     }
 
     function recalculateExpenses(expenses) {

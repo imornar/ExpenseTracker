@@ -5,10 +5,11 @@
     .module('common.services',['ngResource'])
     .factory('common',common);
 
-  common.$inject = ['$location', '$q', '$rootScope', '$timeout', 'Modal', 'dataservice', 'Auth', '$filter'];
+  common.$inject = ['$location', '$q', '$rootScope', '$timeout', 'Modal', 'dataservice', 'Auth', '$filter', '$http'];
 
-  function common($location, $q, $rootScope, $timeout, Modal, dataservice, Auth, $filter) {
+  function common($location, $q, $rootScope, $timeout, Modal, dataservice, Auth, $filter, $http) {
       var service = {
+        $http:$http,
         $location:$location,
         $filter:$filter,
         $rootScope:$rootScope,

@@ -10,7 +10,12 @@ angular
     function AdminCtrl($scope, userResource, dataservice, common){
 
     $scope.errors = '';
-    $scope.users = dataservice.getUsers();
+    dataservice.getUsers()
+      .then(function (data) {
+        $scope.users = data;})
+      .catch(function (err) {
+        console.log('error caught while fetching users: ', err);
+      });
 
     $scope.delete =function(user) {
       if(user.role!='admin'){
