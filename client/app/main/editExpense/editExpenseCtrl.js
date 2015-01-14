@@ -14,8 +14,8 @@
           editExp.temporary = expense;
         });
 
-        editExp.saveExpense= function () {
-          expenseResource.update({id: id}, editExp.temporary);
+        editExp.saveExpense= function (input) {
+          expenseResource.update({id: id}, input);
           common.$location.path('/');
         }
 

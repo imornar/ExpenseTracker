@@ -14,13 +14,14 @@
     newExp.temporary.dateTime.setSeconds(null);
     newExp.temporary.dateTime.setMilliseconds(null);
     newExp.me = {};
-    newExp.me = common.Auth.getCurrentUser();
     $('#focus').focus();
 
-    newExp.saveNewExpense= function () {
-      newExp.temporary.daySum=newExp.temporary.amount;
-      expenseResource.save(newExp.temporary);
-      common.$location.path('/')
+
+
+    newExp.saveNewExpense= function (input) {
+      input.daySum=input.amount;
+      expenseResource.save(input);
+      common.$location.path('/');
     };
 
   }

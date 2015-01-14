@@ -78,7 +78,7 @@
       <div class="form-group form-horizontal">
         <div class="col-md-offset-4 col-md-8">
           <p class="help-block"> {{ message }} </p>
-          <button class="btn btn btn-success" ng-click="newExp.saveNewExpense()" ng-disabled="!newExp.temporary.dateTime ||  !newExp.temporary.amount ||  !newExp.temporary.description"><i class="glyphicon glyphicon-floppy-disk"></i> Save & close</button>
+          <button class="btn btn btn-success" ng-click="newExp.saveNewExpense(newExp.temporary)" ng-disabled="!newExp.temporary.dateTime ||  !newExp.temporary.amount ||  !newExp.temporary.description"><i class="glyphicon glyphicon-floppy-disk"></i> Save & close</button>
           <button class="btn btn btn-danger" ui-sref="main"><i class="glyphicon glyphicon-th-list"></i> Cancel & return</button>
         </div>
       </div>
