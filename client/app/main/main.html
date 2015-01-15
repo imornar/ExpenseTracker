@@ -1,5 +1,4 @@
-<div ng-include="'components/navbar/navbar.html'"></div>
-<div class="form-horizontal">
+<div class="form-horizontal" ng-controller="MainCtrl as main">
   <div class="row">
     <div class="col-md-4">
     <div class="well well-sm">
@@ -7,14 +6,14 @@
       <div class="form-group">
         <label class="col-md-3 control-label">From:</label>
           <div class="col-md-9">
-            <input type="text" class="form-control" ng-model="im.filters.dateFrom" autoclose="true" placeholder="Date from" bs-datepicker>
+            <input type="text" class="form-control front-inputs" ng-model="main.filters.dateFrom" autoclose="true" placeholder="Date from" bs-datepicker>
           </div>
       </div>
 
       <div class="form-group">
         <label class="col-md-3 control-label">To:</label>
           <div class="col-md-9">
-            <input type="text" class="form-control" ng-model="im.filters.dateTo" autoclose="true" placeholder="Date to" bs-datepicker>
+            <input type="text" class="form-control front-inputs" ng-model="main.filters.dateTo" autoclose="true" placeholder="Date to" bs-datepicker>
           </div>
       </div>
 
@@ -28,8 +27,8 @@
           <label class="col-md-3 control-label">From:</label>
           <div class="col-md-9">
             <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
-              <input type="time" style="height: 35px" ng-model="im.filters.timeFrom" class="form-control"/>
+              <span class="input-group-addon front-inputs"><i class="fa fa-clock-o"></i></span>
+              <input type="time" style="height: 35px" ng-model="main.filters.timeFrom" class="form-control"/>
             </div>
             </div>
         </div>
@@ -38,8 +37,8 @@
           <label class="col-md-3 control-label">To:</label>
           <div class="col-md-9">
             <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
-              <input type="time" style="height: 35px" ng-model="im.filters.timeTo" class="form-control"/>
+              <span class="input-group-addon front-inputs"><i class="fa fa-clock-o"></i></span>
+              <input type="time" style="height: 35px" ng-model="main.filters.timeTo" class="form-control"/>
           </div>
         </div>
         </div>
@@ -50,12 +49,11 @@
     <div class="col-md-4"><br/><br/>
         <div class="form-group">
           <label class="col-md-3 control-label" >Week:
-          <input type="week" class="well well-sm" ng-model="im.selectedWeek" ng-change="im.refreshWeek()"/></label>
+          <input type="week" class="well well-sm" ng-model="main.selectedWeek" ng-change="main.refreshWeek()"/></label>
         </div>
     </div>
 
   </div>
-
 
   <div class="row">
     <div class="col-md-12">
@@ -65,15 +63,15 @@
       </div>
 
       <div class="col-md-2">
-        <button class="btn btn-sm btn-primary form-control" ng-click="im.filters.dateTo=undefined;im.filters.dateFrom=undefined;im.filters.timeTo=undefined;im.filters.timeFrom=undefined; im.search=''"><i class="glyphicon glyphicon-refresh"></i> Clear Filters</button>
+        <button class="btn btn-sm btn-primary form-control" ng-click="main.filters.dateTo=undefined;main.filters.dateFrom=undefined;main.filters.timeTo=undefined;main.filters.timeFrom=undefined; main.search=''"><i class="glyphicon glyphicon-refresh"></i> Clear Filters</button>
       </div>
 
        <div class="form-group">
          <label class="col-md-3 control-label">Search: </label>
          <div class="col-md-3">
             <div class="input-group">
-             <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
-             <input type="text" ng-model="im.search" class="form-control" placeholder="Search expenses here..."/>
+             <span class="input-group-addon front-inputs"><i class="glyphicon glyphicon-search"></i></span>
+             <input type="text" ng-model="main.search" class="form-control front-inputs" placeholder="Search expenses here..."/>
            </div>
           </div>
        </div>
@@ -81,9 +79,9 @@
     </div>
   </div>
 
-  <table ng-table="im.tableParams" class="table table-striped table-bordered ">
+  <table ng-table="main.tableParams" class="table table-bordered table-condensed">
     <tbody ng-repeat="group in $groups">
-    <tr class="ng-table-group">
+    <tr class="ng-table-group ">
       <td colspan="{{$columns.length}}">
         <a href="" ng-click="group.$hideRows = !group.$hideRows">
           <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
@@ -91,7 +89,7 @@
           Total: <strong>{{group.data[0].counter}}</strong> expenses! Week summary: {{group.data[0].weekSum |currency:'€ ':'2'}}, week average: {{group.data[0].averagePerWeek|currency:'€ ':'2'}}
       </td>
     </tr>
-    <tr ng-hide="group.$hideRows" ng-repeat="expense in group.data | expenseFilter: im.filters | filter: im.search" >
+    <tr ng-hide="group.$hideRows" ng-repeat="expense in group.data | expenseFilter: main.filters | filter: main.search" >
       <td style="width: 10%" sortable="date" data-title="'Date'">
         {{expense.dateTime | date:'MM-dd-yyyy'}}
       </td>
@@ -107,9 +105,9 @@
         {{expense.comment}}
       </td>
       <td style="width: 15%" data-title="'Actions'">
-       <div class="btnContainter">
+       <div class="btnContainter ">
          <button ui-sref="edit({id: expense._id})" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-edit"></i>Edit</button>
-        <button ng-click="im.deleteExpense(expense)" class="btn btn-sm btn-danger" data-toggle="modal"><i class="glyphicon glyphicon-trash"></i>Delete</button>
+        <button ng-click="main.deleteExpense(expense)" class="btn btn-sm btn-danger" data-toggle="modal"><i class="glyphicon glyphicon-trash"></i>Delete</button>
        </div>
       </td>
     </tr>
@@ -117,6 +115,5 @@
   </table>
 
 
-<div ng-include="'components/footer/footer.html'"></div>
 </div>
 

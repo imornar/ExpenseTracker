@@ -2,7 +2,11 @@
 (function () {
 
 angular.module('expenseTrackerApp')
-  .controller('UserDataSettingsCtrl',['$scope', 'userResource', 'common', function ($scope, userResource, common) {
+  .controller('UserDataSettingsCtrl',UserDataSettingsCtrl);
+
+  UserDataSettingsCtrl.$inject = ['$scope', 'userResource', 'common'];
+
+  function UserDataSettingsCtrl($scope, userResource, common) {
     var data = this;
     data.errors = {};
     data.tempMe = {};
@@ -24,6 +28,6 @@ angular.module('expenseTrackerApp')
     $scope.returnToExpenses= function () {
       common.$location.path('/');
     }
-  }]);
+  };
 
 })();

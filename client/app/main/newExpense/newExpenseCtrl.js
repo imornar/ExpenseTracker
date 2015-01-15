@@ -17,7 +17,6 @@
     $('#focus').focus();
 
 
-
     newExp.saveNewExpense= function (input) {
       input.daySum=input.amount;
       expenseResource.save(input);
