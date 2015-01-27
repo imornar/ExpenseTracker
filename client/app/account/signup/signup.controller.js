@@ -7,9 +7,11 @@ angular.module('expenseTrackerApp')
     $scope.user = {};
     $scope.errors = {};
 
+
+
+
     $scope.register = function(form) {
       $scope.submitted = true;
-
       if(form.$valid) {
         common.Auth.createUser({
           name: $scope.user.name,
@@ -18,7 +20,7 @@ angular.module('expenseTrackerApp')
         })
         .then( function() {
           // Account created, redirect to home
-          $location.path('/');
+          common.$location.path('/');
         })
         .catch( function(err) {
           err = err.data;

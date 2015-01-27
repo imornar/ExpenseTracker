@@ -5,14 +5,15 @@
     .module('expenseTrackerApp')
     .controller('MainCtrl', MainCtrl);
 
-  MainCtrl.$inject = ['$scope', 'ngTableParams', 'dataservice', 'common'];
-  function MainCtrl($scope, ngTableParams, dataservice, common) {
+  MainCtrl.$inject = ['$scope', 'ngTableParams', 'dataservice', 'common','$interpolate'];
+  function MainCtrl($scope, ngTableParams, dataservice, common,$interpolate) {
     var im = this;
     im.expenses = [];
     im.filters = {};
     im.selectedWeek = 0;
     im.search = '';
     im.tempExpenses = [];
+    im.clock=new Date;
 
     activate();
 
@@ -65,6 +66,18 @@
       }
     });
     im.tableParams.settings().$scope = $scope;
+
+  setInterval(function(){
+    im.clock= new Date();
+    $scope.$apply()
+  },1000 );
+
+
+
+
+
+
+
   }
 
 })();

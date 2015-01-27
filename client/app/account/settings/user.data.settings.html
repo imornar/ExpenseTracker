@@ -1,19 +1,20 @@
-<fieldset>
-  <div class="form-horizontal" ng-controller="UserDataSettingsCtrl as data">
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<div class="form-horizontal" ng-controller="UserDataSettingsCtrl as data">
     <div class="col-md-5">
       <h2 class="col-sm-offset-3">User data settings</h2>
       <br/>
       <div class="form-group">
         <label class="col-md-3 control-label">Name:</label>
         <div class="col-md-9">{{user}}
-          <input type="text" class="form-control" ng-model="data.tempMe.name"/>
+          <input type="text" class="form-control requiredInput" ng-model="data.tempMe.name"/>
         </div>
       </div>
 
       <div class="form-group">
         <label class="col-md-3 control-label">E-mail:</label>
         <div class="col-md-9">
-          <input type="text" class="form-control" ng-model="data.tempMe.email"/>
+          <input type="text" class="form-control requiredInput" ng-model="data.tempMe.email"/>
         </div>
       </div>
 
@@ -36,9 +37,7 @@
     </div>
     <br/><br/><br/><br/>
     <div class="col-sm-2">
-
     <i class="glyphicon glyphicon-user" style="font-size: 1000%"></i>
     </div>
   </div>
 
-</fieldset>

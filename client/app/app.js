@@ -1,7 +1,7 @@
-'use strict';
 (function () {
+  "use strict";
 
-angular.module('expenseTrackerApp', [
+  angular.module('expenseTrackerApp', [
   'common.services',
   'ngCookies',
   'ngSanitize',
@@ -14,7 +14,6 @@ angular.module('expenseTrackerApp', [
   'ngAnimate',
   //'fakeServer',
   'ngTable'
-
 ])
   .constant('routes',getRoutes())
   .factory('authInterceptor',authInterceptor)
@@ -79,25 +78,29 @@ angular.module('expenseTrackerApp', [
        state:'main',
        config:{
          url:'/',
-         templateUrl: 'app/main/main.html'
+         templateUrl: 'app/main/main.html',
+         authenticate: true
        }
      }, {
        state: 'new',
        config:{
          url: '/new',
-         templateUrl: 'app/main/newExpense/newExpense.html'
+         templateUrl: 'app/main/newExpense/newExpense.html',
+         authenticate: true
        }
      }, {
        state: 'edit',
        config:{
          url: '/edit/:id',
-         templateUrl: 'app/main/editExpense/editExpense.html'
+         templateUrl: 'app/main/editExpense/editExpense.html',
+         authenticate: true
      }
      },{
        state: 'admin',
        config:{
          url: '/admin',
-         templateUrl: 'app/admin/admin.html'
+         templateUrl: 'app/admin/admin.html',
+         authenticate: true
      }
      },{
        state: 'login',

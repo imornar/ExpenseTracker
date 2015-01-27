@@ -1,66 +1,59 @@
-<fieldset>
+<div ng-include="'components/navbar/navbar.html'"></div>
+
 <div class="form-horizontal" ng-controller="NewExpenseCtrl as newExp">
   <h2 class="col-sm-offset-2">Adding new expense</h2>
   <br/>
   <div class="col-md-6">
 
     <div class="form-group">
-      <label class="col-md-3 control-label">Date:</label>
+      <label class="col-md-3 control-label required">Date:</label>
          <div class="col-md-9">
-           <p class="input-group">
            <div class="input-group">
              <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-           <input type="text" class="form-control" ng-model="newExp.temporary.dateTime" autoclose="true" bs-datepicker required>
-             <span class="input-group-btn">
-                <span class="btn btn-default"><i style="color: red; font-size: 10px; " class="glyphicon glyphicon-asterisk"></i></span>
-              </span>
+              <input type="text" class="form-control requiredInput" ng-model="newExp.temporary.dateTime" autoclose="true" bs-datepicker required>
+             <!--<span class="input-group-btn">-->
+                <!--<span class="btn btn-default"><i style="color: red; font-size: 10px; " class="glyphicon glyphicon-asterisk"></i></span>-->
+              <!--</span>-->
            </div>
-          </p>
          </div>
     </div>
 
     <div class="form-group">
-      <label class="col-md-3 control-label">Time:</label>
+      <label class="col-md-3 control-label required">Time:</label>
       <div class="col-md-9">
-        <p class="input-group">
        <div class="input-group">
            <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
-         <input type="time" style="height: 35px" ng-model="newExp.temporary.dateTime" class="form-control"/>
-          <span class="input-group-btn">
-                 <span class="btn btn-default"><i style="color: red; font-size: 10px; " class="glyphicon glyphicon-asterisk"></i></span>
-              </span>
+             <input type="time" style="height: 35px" ng-model="newExp.temporary.dateTime" class="form-control requiredInput"/>
+          <!--<span class="input-group-btn">-->
+                 <!--<span class="btn btn-default"><i style="color: red; font-size: 10px; " class="glyphicon glyphicon-asterisk"></i></span>-->
+              <!--</span>-->
          </div>
-        </p>
       </div>
     </div>
 
     <div class="form-group">
-      <label class="col-md-3 control-label">Description:</label>
+      <label class="col-md-3 control-label required">Description:</label>
       <div class="col-md-9">
-        <p class="input-group">
        <div class="input-group">
          <span class="input-group-addon"><i class="glyphicon glyphicon-font"></i>  </span>
-        <input type="text" id="focus" ng-model="newExp.temporary.description" class="form-control" placeholder="Description here..."/>
-          <span class="input-group-btn">
-                <span class="btn btn-default"><i style="color: red; font-size: 10px; " class="glyphicon glyphicon-asterisk"></i></span>
-              </span>
+        <input type="text" id="focus" ng-model="newExp.temporary.description" class="form-control requiredInput" placeholder="Description here..." required=""/>
+          <!--<span class="input-group-btn">-->
+                <!--<span class="btn btn-default"><i style="color: red; font-size: 10px; " class="glyphicon glyphicon-asterisk"></i></span>-->
+              <!--</span>-->
        </div>
-        </p>
       </div>
     </div>
 
     <div class="form-group">
-      <label class="col-md-3 control-label">Amount:</label>
+      <label class="col-md-3 control-label required">Amount:</label>
       <div class="col-md-9">
-        <p class="input-group">
         <div class="input-group">
           <span class="input-group-addon"><i class="glyphicon glyphicon-euro"></i>  </span>
-          <input type="number" ng-model="newExp.temporary.amount" class="form-control" placeholder="Total amount here..."/>
-        <span class="input-group-btn">
-                 <span class="btn btn-default"><i style="color: red; font-size: 10px; " class="glyphicon glyphicon-asterisk"></i></span>
-              </span>
+          <input type="number" ng-model="newExp.temporary.amount" class="form-control requiredInput" placeholder="Total amount here..." required=""/>
+        <!--<span class="input-group-btn">-->
+                 <!--<span class="btn btn-default"><i style="color: red; font-size: 10px; " class="glyphicon glyphicon-asterisk"></i></span>-->
+              <!--</span>-->
         </div>
-        </p>
       </div>
     </div>
 
@@ -81,8 +74,6 @@
         </div>
       </div>
     </div>
-
   </div>
-
 </div>
-</fieldset>
+

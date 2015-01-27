@@ -2,13 +2,13 @@
 
 angular.module('expenseTrackerApp')
   .factory('Auth',['$location', '$rootScope', '$http', 'userResource', '$cookieStore', '$q', function ($location, $rootScope, $http, userResource, $cookieStore, $q) {
+    var loggedList = [];
     var currentUser = {};
     if($cookieStore.get('token')) {
       currentUser = userResource.get();
     }
 
     return {
-
       /**
        * Authenticate user and save token
        *
@@ -100,7 +100,7 @@ angular.module('expenseTrackerApp')
       getCurrentUser: function() {
         var deferred = $q.defer();
         try {
-          if(currentUser)
+        //  if(currentUser)
           deferred.resolve(currentUser);
         } catch (e) {
          deferred.reject(e)

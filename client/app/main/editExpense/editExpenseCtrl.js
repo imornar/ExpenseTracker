@@ -17,7 +17,7 @@
         editExp.saveExpense= function (input) {
           expenseResource.update({id: id}, input);
           common.$location.path('/');
-        }
+        };
 
-      };
+      }
 })();

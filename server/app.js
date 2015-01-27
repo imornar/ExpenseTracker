@@ -13,6 +13,9 @@ var config = require('./config/environment');
 
 // Connect to database
 mongoose.connect(config.mongo.uri, config.mongo.options);
+mongoose.connection.once('open', function () {
+  console.log('connected to DB!');
+});
 
 // Populate DB with sample data
 if(config.seedDB) { require('./config/seed'); }
@@ -27,6 +30,9 @@ require('./routes')(app);
 server.listen(config.port, config.ip, function () {
   console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
 });
+
+var updater = require("../updater");
+updater.init(server);
 
 // Expose app
 exports = module.exports = app;

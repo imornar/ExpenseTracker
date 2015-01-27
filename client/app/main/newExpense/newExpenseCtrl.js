@@ -5,9 +5,9 @@
     .module('expenseTrackerApp')
     .controller('NewExpenseCtrl', NewExpenseCtrl);
 
-  NewExpenseCtrl.$inject = ['expenseResource', 'common'];
+  NewExpenseCtrl.$inject = ['expenseResource', 'common', 'socketio'];
 
-  function NewExpenseCtrl(expenseResource,common) {
+  function NewExpenseCtrl(expenseResource,common, socketio) {
     var newExp = this;
     newExp.temporary = {};
     newExp.temporary.dateTime = new Date();
@@ -19,9 +19,12 @@
 
     newExp.saveNewExpense= function (input) {
       input.daySum=input.amount;
+      socketio.emit('new', input.description);
       expenseResource.save(input);
       common.$location.path('/');
     };
+
+
 
   }
 

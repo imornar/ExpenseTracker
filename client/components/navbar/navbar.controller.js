@@ -3,18 +3,19 @@
 
 
 angular.module('expenseTrackerApp')
-  .controller('NavbarCtrl',['$scope', '$location', 'Auth', function ($scope, $location, Auth) {
+  .controller('NavbarCtrl',['$scope', '$location', 'Auth',
+    function ($scope, $location, Auth) {
     $scope.menu = [{
       'title': 'Home',
       'link': '/'
     }];
-
+    $scope.current = {};
     $scope.isCollapsed = true;
     $scope.isLoggedIn = Auth.isLoggedIn;
     $scope.isAdmin = Auth.isAdmin;
-    Auth.getCurrentUser().then(function (me) {
-      $scope.current = me;
-    });
+    Auth.getCurrentUser().then(function (user) {
+    $scope.current = user;
+});
 
     $scope.logout = function() {
       Auth.logout();

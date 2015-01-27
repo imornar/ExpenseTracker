@@ -102,7 +102,7 @@ describe('GET /api/expenses', function() {
       })
   });
 
-  it('admin shuld be able to get list of all users', function(done){
+  it('admin should be able to get list of all users', function(done){
     request(app)
       .get('/api/users')
       .set('Authorization','Bearer ' + tokens[2])

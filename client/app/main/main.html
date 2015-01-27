@@ -1,4 +1,11 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
 <div class="form-horizontal" ng-controller="MainCtrl as main">
+
+
+
+<div class="clock">Current time: {{main.clock   | date:"hh:mm:ss a"}}</div>
+  <section>
   <div class="row">
     <div class="col-md-4">
     <div class="well well-sm">
@@ -16,7 +23,6 @@
             <input type="text" class="form-control front-inputs" ng-model="main.filters.dateTo" autoclose="true" placeholder="Date to" bs-datepicker>
           </div>
       </div>
-
     </div>
     </div>
 
@@ -71,15 +77,21 @@
          <div class="col-md-3">
             <div class="input-group">
              <span class="input-group-addon front-inputs"><i class="glyphicon glyphicon-search"></i></span>
-             <input type="text" ng-model="main.search" class="form-control front-inputs" placeholder="Search expenses here..."/>
-           </div>
+             <input type="search" list="searchList" ng-model="main.search" class="form-control front-inputs" placeholder="Search expenses here..."/>
+                <datalist id="searchList">
+                  <option value="Car"></option>
+                  <option value="Tv"></option>
+                  <option value="Laptop"></option>
+                  <option value="Mobile"></option>
+                </datalist>
+            </div>
           </div>
        </div>
 
     </div>
   </div>
 
-  <table ng-table="main.tableParams" class="table table-bordered table-condensed">
+  <table ng-table="main.tableParams" class="table table-bordered table-condensed ">
     <tbody ng-repeat="group in $groups">
     <tr class="ng-table-group ">
       <td colspan="{{$columns.length}}">
@@ -89,20 +101,20 @@
           Total: <strong>{{group.data[0].counter}}</strong> expenses! Week summary: {{group.data[0].weekSum |currency:'€ ':'2'}}, week average: {{group.data[0].averagePerWeek|currency:'€ ':'2'}}
       </td>
     </tr>
-    <tr ng-hide="group.$hideRows" ng-repeat="expense in group.data | expenseFilter: main.filters | filter: main.search" >
+    <tr ng-hide="group.$hideRows" ng-repeat="expense in group.data | expenseFilter: main.filters | filter: main.search">
       <td style="width: 10%" sortable="date" data-title="'Date'">
-        {{expense.dateTime | date:'MM-dd-yyyy'}}
+        {{::expense.dateTime | date:'MM-dd-yyyy'}}
       </td>
       <td style="width: 10%" sortable="time" data-title="'Time'">
-      {{expense.dateTime | date:'HH:mm a'}}
+      {{::expense.dateTime | date:'HH:mm a'}}
     </td>
       <td style="width: 25%" sortable="description" data-title="'Description'">
-        {{expense.description}}
+        {{::expense.description}}
       </td>
       <td style="width: 10%" sortable="amount" data-title="'Amount'">
-        {{expense.amount |currency:'€ ':'2'}}
+        {{::expense.amount |currency:'€ ':'2'}}
       <td style="width: 30%" sortable="comment" data-title="'Comment'">
-        {{expense.comment}}
+        {{::expense.comment}}
       </td>
       <td style="width: 15%" data-title="'Actions'">
        <div class="btnContainter ">
@@ -113,7 +125,5 @@
     </tr>
     </tbody>
   </table>
-
-
+</section>
 </div>
-
